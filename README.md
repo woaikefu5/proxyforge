@@ -1,46 +1,38 @@
 ﻿<p align=""center"">
-  <h1>ProxyForge</h1>
-  <p>Xray 多协议管理 + 套餐卡一键生成</p>
-</p>
-
-<p align=""center"">
-  <img src=""https://img.shields.io/badge/python-3.9+-blue"" />
-  <img src=""https://img.shields.io/badge/platform-Win%20|%20Mac%20|%20Linux-green"" />
-  <img src=""https://img.shields.io/badge/license-MIT-brightgreen"" />
-  <img src=""https://img.shields.io/badge/version-1.0.0-orange"" />
+  <h1> ProxyForge</h1>
+  <p><b>Xray 多协议管理 + 套餐卡一键生成</b></p>
+  <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.0.0</code></p>
 </p>
 
 ---
 
-## 这是什么？
+##  这是什么？
 
 **ProxyForge** 是一个给节点主用的工具箱。
 
-> 添加服务器 → 配置协议 → 生成客户的二维码套餐卡，三步搞定。
-
-像这样：
+> 添加服务器  配置协议  生成客户的二维码套餐卡，三步搞定。
 
 ![demo card](assets/demo-card.png)
 
 ---
 
-## 功能
+##  功能
 
 | 模块 | 说明 |
 |------|------|
-| 多协议链接生成 | VLESS+Reality / VLESS+WS+TLS / VLESS+gRPC / VMess / Trojan / Shadowsocks |
-| Xray 自动下载 | 内置 Xray-core 下载器，无需手动安装 |
-| 套餐卡生成 | 一键生成带二维码的客户套餐卡 (PNG) |
-| 多服务器管理 | 同时管理多个 VPS 节点，每个节点多个入站 |
-| 跨平台 | Windows / macOS / Linux 都能跑 |
+|  多协议链接生成 | VLESS+Reality / VLESS+WS+TLS / VLESS+gRPC / VMess / Trojan / Shadowsocks |
+|  Xray 自动下载 | 内置 Xray-core 下载器，无需手动安装 |
+|  套餐卡生成 | 一键生成带二维码的客户套餐卡 (PNG) |
+|  多服务器管理 | 同时管理多个 VPS 节点，每个节点多个入站 |
+|  跨平台 | Windows / macOS / Linux 都能跑 |
 
 ---
 
-## 支持的协议
+##  支持的协议
 
-| 协议 | 传输 | 安全/TLS | 适用场景 |
-|------|------|----------|----------|
-| VLESS | TCP | Reality+Vision | 推荐首选 |
+| 协议 | 传输 | 安全 | 适用场景 |
+|------|------|------|----------|
+| VLESS | TCP | Reality+Vision |  推荐首选 |
 | VLESS | WebSocket | TLS | CDN 友好 |
 | VLESS | gRPC | TLS | 高性能 |
 | VMess | WebSocket | TLS | 兼容旧客户端 |
@@ -49,45 +41,39 @@
 
 ---
 
-## 快速开始
+##  快速开始
 
 ### 方式一：Python
 
 `ash
-# 克隆
 git clone https://github.com/woaikefu5/proxyforge.git
 cd proxyforge
-
-# 安装依赖
 pip install -r requirements.txt
-
-# 运行
 python -m proxyforge.main
 `
 
-### 方式二：打包成 EXE
+### 方式二：打包 EXE
 
 `ash
 pip install pyinstaller
 pyinstaller --onefile --name ProxyForge proxyforge/main.py
-# dist\ProxyForge.exe 双击即用
 `
 
 ---
 
-## 使用流程
+##  使用流程
 
 `
-1. 添加服务器      →  输入 VPS IP
-2. 添加入站协议    →  选 VLESS+Reality，填公钥/SNI/shortId
-3. 生成套餐卡      →  填客户名 + 选套餐 → 出图到桌面！
+1. 添加服务器       输入 VPS IP
+2. 添加入站协议     选 VLESS+Reality，填公钥/SNI/shortId
+3. 生成套餐卡       填客户名 + 选套餐  出图到桌面！
 `
 
 首次运行会自动弹出配置引导，设置品牌名和联系方式。
 
 ---
 
-## 配置
+##  配置
 
 配置文件自动生成在 ~/.proxyforge/config.yaml：
 
@@ -116,24 +102,24 @@ packages:
 
 ---
 
-## 项目结构
+##  项目结构
 
 `
 proxyforge/
-├── main.py          # CLI 交互菜单
-├── config.py        # 配置管理
-├── protocols.py     # 6 种协议链接生成
-├── cardgen.py       # 套餐卡 + 二维码
-├── xray.py          # Xray-core 下载器
-└── assets/          # 展示图
+  main.py           CLI 交互菜单
+  config.py         配置管理
+  protocols.py      6 种协议链接生成
+  cardgen.py        套餐卡 + 二维码
+  xray.py           Xray-core 下载器
+  assets/           展示图
 `
 
 ---
 
-## 免责声明
+##  免责声明
 
 本工具仅供学习和技术交流。使用者需遵守当地法律法规。
 
-## License
+##  License
 
 MIT
