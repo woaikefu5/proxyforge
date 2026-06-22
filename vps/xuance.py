@@ -49,7 +49,7 @@ def ld():
     if os.path.exists(DB):
         for l in open(DB).read().strip().split('\n'):
             p = l.strip().split('|')
-            if len(p) >= 6:
+            if len(p) >= 5:
                 d[p[1]] = {'n': p[0], 'l': p[2], 'd': p[3], 'u': int(p[4])}
     return d
 
