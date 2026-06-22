@@ -83,6 +83,18 @@ proxyforge/
 
 仅供学习和技术交流。请遵守当地法律法规。
 
+---
+
+##  捐赠 / 打赏
+
+如果这个工具帮到了你，可以请我喝杯咖啡  
+
+<p align=""center"">
+  <img src=""assets/wechat-donate.jpg"" width=""260"" alt=""微信打赏"">
+</p>
+
+---
+
 ##  License
 
 MIT
