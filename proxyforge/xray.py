@@ -1,4 +1,4 @@
-﻿"""馒头的玄策 - Xray 核心下载管理"""
+"""馒头的玄策 - Xray 核心下载管理"""
 import os
 import sys
 import json

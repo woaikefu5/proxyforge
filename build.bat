@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 echo ========================================
 echo   馒头的玄策 - 打包 EXE

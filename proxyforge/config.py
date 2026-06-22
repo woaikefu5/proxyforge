@@ -1,4 +1,4 @@
-﻿"""ProxyForge - 配置文件管理"""
+"""馒头的玄策 - 配置文件管理"""
 import yaml
 import os
 from pathlib import Path

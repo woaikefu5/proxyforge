@@ -1,4 +1,4 @@
-﻿"""馒头的玄策 - 套餐卡 + 二维码生成"""
+"""馒头的玄策 - 套餐卡 + 二维码生成"""
 import os
 import qrcode
 from PIL import Image, ImageDraw, ImageFont

@@ -247,7 +247,7 @@ def vps_deploy_menu():
     print(c("Y", "\n[Step 2] Run this one-liner:\n"))
     print(c("G", "  bash <(curl -sL https://raw.githubusercontent.com/woaikefu5/proxyforge/main/vps/install.sh)"))
     
-    print(c("Y", "\n[Step 3] First-run config (run  lisa  on VPS):\n"))
+    print(c("Y", "\n[Step 3] First-run config (run  xuance  on VPS):\n"))
     if servers:
         for sid, svr in list(servers.items())[:1]:
             print(f"  Server IP: {svr['host']}")
@@ -262,7 +262,7 @@ def vps_deploy_menu():
         print(c("R", "  (Add a server first for auto-fill)"))
     
     print(c("Y", "\n[Step 4] Manage users on VPS:\n"))
-    print("  lisa    (or: python3 /root/lisa.py)")
+    print("  xuance   (or: python3 /root/xuance.py)")
     print("  1. View users + traffic")
     print("  2. Add user  -> auto-generates VLESS link")
     print("  3. Delete user")

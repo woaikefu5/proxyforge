@@ -24,7 +24,7 @@ chmod +x /root/xuance.py
 # 用 symlink 做全局命令（比 alias 更可靠）
 ln -sf /root/xuance.py /usr/local/bin/xuance 2>/dev/null || true
 
-# 清理旧 lisa 残留
+# 清理旧版残留（丽萨→玄策）
 rm -f /root/lisa.py /root/lisa_v3.py /root/lisa_v2.py /root/lisa_users.db 2>/dev/null || true
 sed -i '/alias lisa=/d' /root/.bashrc 2>/dev/null || true
 

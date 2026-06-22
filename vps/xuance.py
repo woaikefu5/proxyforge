@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """玄策 · 用户管理系统 v3.0
 将此文件放到你的 VPS 上: /root/xuance.py
 首次运行会自动提示配置服务器信息。
