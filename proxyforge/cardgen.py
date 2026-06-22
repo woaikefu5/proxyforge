@@ -38,7 +38,7 @@ def generate_qr(data, path=None, size=400):
 
 
 def generate_card(name, link, package_info, output_path,
-                  brand_name="馒头的玄策", contact="@me",
+                  brand_name="馒头的玄策", contact="woaikefu5@gmail.com",
                   features=None):
     font_title, font_body, font_small, font_link = _get_fonts()
 
