@@ -74,7 +74,7 @@ def generate_card(name, link, package_info, output_path,
     draw.line([(30, 560), (770, 560)], fill="#e94560", width=1)
     draw.text((40, 575), "扫码导入 即开即用", fill="#aaaaaa", font=font_body)
     draw.text((40, 610), f"联系: {contact}", fill="#aaaaaa", font=font_small)
-    draw.text((40, 632), "Powered by 馒头的玄策 | github.com/woaikefu5/proxyforge",
+    draw.text((40, 632), "Powered by 馒头的玄策 | woaikefu5@gmail.com | github.com/woaikefu5/proxyforge",
               fill="#555555", font=font_small)
 
     card.save(output_path)

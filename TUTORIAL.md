@@ -306,5 +306,5 @@ A: 微信/支付宝收款码，或者用 USDT（推荐 [Binance](https://binance
 
 ---
 
->   开源不易，欢迎 [Star](https://github.com/woaikefu5/proxyforge)  
+>   联系：woaikefu5@gmail.com | 开源不易，欢迎 [Star](https://github.com/woaikefu5/proxyforge)  
 >   有问题提 [Issues](https://github.com/woaikefu5/proxyforge/issues)

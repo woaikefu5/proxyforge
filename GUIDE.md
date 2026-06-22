@@ -173,6 +173,7 @@ A: 编辑 xuance.py，搜索 days=30 改为你需要的天数。
 
 ##  联系 & 贡献
 
+- 联系邮箱：woaikefu5@gmail.com
 - GitHub Issues：https://github.com/woaikefu5/proxyforge/issues
 - 欢迎 PR / Star  
 
