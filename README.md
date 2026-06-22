@@ -1,4 +1,4 @@
-<p align="center">
+﻿<p align="center">
   <h1> 馒头的玄策</h1>
   <p><b>Xray 多协议管理 + 套餐卡一键生成</b></p>
   <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.2.0</code></p>
@@ -27,6 +27,12 @@ python -m proxyforge.main
 
 >   **[详细中文教程  点这里](GUIDE.md)** / **[从零开始保姆级教程](TUTORIAL.md)**
 
+
+##  运行环境
+
+>   **极低门槛**：1核CPU + 1GB内存的 VPS 即可流畅运行。Xray 核心 + 玄策管理系统内存占用不到 200MB。
+
+---
 ---
 
 ##  功能
