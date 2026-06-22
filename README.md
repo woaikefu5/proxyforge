@@ -90,7 +90,7 @@ proxyforge/
 如果这个工具帮到了你，可以请我喝杯咖啡  
 
 <p align=""center"">
-  <img src=""assets/wechat-donate.jpg"" width=""260"" alt=""微信打赏"">
+  <img src=""https://raw.githubusercontent.com/woaikefu5/proxyforge/main/assets/wechat-donate.jpg"" width=""260"" alt=""微信打赏"">
 </p>
 
 ---
