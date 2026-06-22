@@ -95,6 +95,12 @@ proxyforge/
 
 ---
 
+##  更新日志
+
+[CHANGELOG.md](CHANGELOG.md)
+
+---
+
 ##  License
 
 MIT
