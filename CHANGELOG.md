@@ -4,6 +4,27 @@
 
 ---
 
+
+## [v1.2.1] — 2026-06-23
+
+### 修复
+
+- README HTML 属性双引号破损，GitHub 图片无法显示
+- 所有 md 文件代码块标记破损（单引号 / backspace 乱码）
+- GUIDE.md 残留「丽萨 v3.0」→「玄策 v3.0」
+- pyproject.toml 未指定包发现，CI 构建失败
+
+### 新增
+
+- MIT LICENSE 文件
+- GitHub Actions CI（Python 3.9–3.12 多版本测试）
+- README 添加 CI 状态徽章
+- 三份文档标注最低配置：1核1G 即可运行
+
+### 清理
+
+- 临时视频生成脚本 make_video.py + 1350 帧 PNG
+- .gitignore 补充临时文件和构建产物规则
 ## [v1.2.0] — 2026-06-23
 
 ### 新增

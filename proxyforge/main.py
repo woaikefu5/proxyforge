@@ -16,7 +16,7 @@ def c(tag, text): return f"{C.get(tag, '')}{text}{C['W']}"
 def banner():
     print()
     print(c("C", "=" * 42))
-    print(c("C", "   馒头的玄策 v1.2.0"))
+    print(c("C", "   馒头的玄策 v1.2.1"))
     print(c("C", "   Xray / 套餐卡 / VPS管理"))
     print(c("C", "=" * 42))
     print()
