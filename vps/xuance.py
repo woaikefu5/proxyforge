@@ -66,7 +66,7 @@ def lu():
     for i, c in enumerate(cs):
         u = db.get(c['id'], {'u': 0, 'l': '?'})
         used = u['u'] // 1073741824
-        limit = u['l']
+        limit = u['l'].replace('GB','')
         print(f'  {i+1}. {c["email"]:<25} {used}GB/{limit}GB')
 
 def ad():
