@@ -1,6 +1,9 @@
-﻿<p align="center">
+<p align="center">
+  [![CI](https://github.com/woaikefu5/proxyforge/actions/workflows/ci.yml/badge.svg)](https://github.com/woaikefu5/proxyforge/actions)
+
   <h1> 馒头的玄策</h1>
   <p><b>Xray 多协议管理 + 套餐卡一键生成</b></p>
+    [![CI](https://github.com/woaikefu5/proxyforge/actions/workflows/ci.yml/badge.svg)](https://github.com/woaikefu5/proxyforge/actions)
   <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.2.0</code></p>
 </p>
 
@@ -96,6 +99,8 @@ proxyforge/
 如果这个工具帮到了你，可以请我喝杯咖啡  
 
 <p align="center">
+  [![CI](https://github.com/woaikefu5/proxyforge/actions/workflows/ci.yml/badge.svg)](https://github.com/woaikefu5/proxyforge/actions)
+
   <img src="https://raw.githubusercontent.com/woaikefu5/proxyforge/main/assets/wechat-donate.jpg" width="260" alt="微信打赏">
 </p>
 
