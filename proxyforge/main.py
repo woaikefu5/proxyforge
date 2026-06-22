@@ -25,7 +25,7 @@ def setup_wizard():
     cfg = load_config()
     print(c("Y", "\n[?] First Run - Quick Setup\n"))
     cfg["brand"]["name"] = input("  Brand name: ").strip() or "MyNode"
-    cfg["brand"]["contact"] = input("  Contact (Telegram/etc): ").strip() or "@me"
+    cfg["brand"]["contact"] = input("  Contact (Telegram/etc): ").strip() or "woaikefu5@gmail.com"
     save_config(cfg)
     print(c("G", "\n  [OK] Config saved\n"))
 
