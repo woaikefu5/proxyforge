@@ -17,3 +17,5 @@ dependencies = [
 
 [project.scripts]
 proxyforge = "proxyforge.main:main"
+[tool.setuptools.packages.find]
+include = ["proxyforge*"]
