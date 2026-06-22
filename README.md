@@ -25,7 +25,7 @@ pip install -r requirements.txt
 python -m proxyforge.main
 `
 
->   **[详细中文教程  点这里](GUIDE.md)** — 从零到卖节点的完整指南
+>   **[详细中文教程  点这里](GUIDE.md)** / **[从零开始保姆级教程](TUTORIAL.md)**
 
 ---
 
