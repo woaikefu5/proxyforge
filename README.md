@@ -1,7 +1,7 @@
 <p align=""center"">
   <h1> 馒头的玄策</h1>
   <p><b>Xray 多协议管理 + 套餐卡一键生成</b></p>
-  <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.0.0</code></p>
+  <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.2.0</code></p>
 </p>
 
 ---

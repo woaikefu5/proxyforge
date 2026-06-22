@@ -1,5 +1,5 @@
 ﻿@echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-call .venv\Scripts\python.exe -m proxyforge.main
+python -m proxyforge.main
 pause

@@ -21,7 +21,7 @@ CONFIG_FILE = "/root/xuance_config.json"
 
 def first_run():
     """首次运行引导"""
-    global HOST, PORT, FLOW, PBK, SNI, SID
+    global HOST, PORT, FLOW, PBK, SNI, SID, CONF
     if os.path.exists(CONFIG_FILE):
         cfg = json.load(open(CONFIG_FILE))
         HOST = cfg.get("host", HOST)
@@ -30,6 +30,8 @@ def first_run():
         PBK = cfg.get("pbk", PBK)
         SNI = cfg.get("sni", SNI)
         SID = cfg.get("sid", SID)
+        if cfg.get("conf"):
+            CONF = cfg["conf"]
         return
     print("\n=== 首次运行 · 配置 ===\n")
     HOST = input("  服务器IP: ").strip()
@@ -37,8 +39,12 @@ def first_run():
     PBK = input("  Reality公钥(pbk): ").strip()
     SNI = input("  回落SNI (默认www.java.com): ").strip() or "www.java.com"
     SID = input("  shortId: ").strip()
-    json.dump({"host": HOST, "port": PORT, "flow": FLOW, "pbk": PBK, "sni": SNI, "sid": SID}, open(CONFIG_FILE, "w"), indent=2)
+    cf = input(f"  Xray配置路径 (默认{CONF}): ").strip()
+    if cf:
+        CONF = cf
+    json.dump({"host": HOST, "port": PORT, "flow": FLOW, "pbk": PBK, "sni": SNI, "sid": SID, "conf": CONF}, open(CONFIG_FILE, "w"), indent=2)
     print("  配置已保存到 " + CONFIG_FILE)
+    print(f"  Xray配置: {CONF}")
 
 # ========== 工具函数 ==========
 def run(c):

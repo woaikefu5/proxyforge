@@ -1,19 +1,19 @@
-﻿[build-system]
-requires = [""setuptools>=61""]
-build-backend = ""setuptools.build_meta""
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = ""proxyforge""
-version = ""1.0.0""
-description = ""Xray multi-protocol manager + QR card generator""
-authors = [{name = ""Lisa Network""}]
-readme = ""README.md""
-requires-python = "">=3.9""
+name = "proxyforge"
+version = "1.2.0"
+description = "馒头的玄策 - Xray多协议管理+套餐卡生成+VPS用户管理"
+authors = [{name = "馒头的玄策"}]
+readme = "README.md"
+requires-python = ">=3.9"
 dependencies = [
-    ""qrcode>=7.4"",
-    ""Pillow>=10.0"",
-    ""PyYAML>=6.0"",
+    "qrcode>=7.4",
+    "Pillow>=10.0",
+    "PyYAML>=6.0",
 ]
 
 [project.scripts]
-proxyforge = ""proxyforge.main:main""
+proxyforge = "proxyforge.main:main"

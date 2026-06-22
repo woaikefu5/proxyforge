@@ -1,4 +1,4 @@
-﻿"""ProxyForge - Xray 核心下载管理"""
+﻿"""馒头的玄策 - Xray 核心下载管理"""
 import os
 import sys
 import json
@@ -32,7 +32,7 @@ def get_latest_version():
     try:
         req = Request(
             "https://api.github.com/repos/XTLS/Xray-core/releases/latest",
-            headers={"User-Agent": "ProxyForge"}
+            headers={"User-Agent": "mantou-xuance"}
         )
         data = json.loads(urlopen(req, timeout=10).read())
         return data["tag_name"].lstrip("v")
@@ -61,7 +61,7 @@ def download_xray(version=None):
     print(f"  {url}")
     
     try:
-        req = Request(url, headers={"User-Agent": "ProxyForge"})
+        req = Request(url, headers={"User-Agent": "mantou-xuance"})
         with urlopen(req, timeout=120) as resp:
             with open(zip_path, "wb") as f:
                 f.write(resp.read())
