@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """ProxyForge - Xray + Card Generator"""
 
 import os, sys
@@ -16,7 +16,7 @@ def c(tag, text): return f"{C.get(tag, '')}{text}{C['W']}"
 def banner():
     print()
     print(c("C", "=" * 42))
-    print(c("C", "   ProxyForge v1.1.0"))
+    print(c("C", "   ProxyForge v1.2.0"))
     print(c("C", "   Xray / Card Generator"))
     print(c("C", "=" * 42))
     print()
@@ -232,6 +232,50 @@ def package_menu():
         elif ch == "4":
             break
 
+def vps_deploy_menu():
+    """VPS one-click deploy helper"""
+    cfg = load_config()
+    servers = cfg.get("servers", {})
+    
+    print(c("C", "\n" + "=" * 50))
+    print(c("C", "   VPS One-Click Deploy"))
+    print(c("C", "=" * 50))
+    
+    print(c("Y", "\n[Step 1] SSH into your VPS\n"))
+    print("  ssh root@your-vps-ip")
+    
+    print(c("Y", "\n[Step 2] Run this one-liner:\n"))
+    print(c("G", "  bash <(curl -sL https://raw.githubusercontent.com/woaikefu5/proxyforge/main/vps/install.sh)"))
+    
+    print(c("Y", "\n[Step 3] First-run config (run  lisa  on VPS):\n"))
+    if servers:
+        for sid, svr in list(servers.items())[:1]:
+            print(f"  Server IP: {svr['host']}")
+            for ib in svr.get("inbounds", []):
+                if ib.get("protocol") == "vless-reality":
+                    print(f"  Port: {ib.get('port', '443')}")
+                    print(f"  pubkey: {ib.get('public_key', 'your-pbk')}")
+                    print(f"  shortId: {ib.get('short_id', 'your-sid')}")
+                    print(f"  SNI: {ib.get('server_name', 'www.java.com')}")
+                    print(f"  flow: {ib.get('flow', 'xtls-rprx-vision')}")
+    else:
+        print(c("R", "  (Add a server first for auto-fill)"))
+    
+    print(c("Y", "\n[Step 4] Manage users on VPS:\n"))
+    print("  lisa    (or: python3 /root/lisa.py)")
+    print("  1. View users + traffic")
+    print("  2. Add user  -> auto-generates VLESS link")
+    print("  3. Delete user")
+    print("  4. Export all links")
+    print("  5. Check limits + auto-stop over-limit/expired")
+    print("  6. Exit")
+    
+    print(c("Y", "\n[Step 5] Back on desktop, generate card:\n"))
+    print("  Menu 3 -> paste customer UUID -> pick package -> card ready!")
+    
+    print(c("C", "\n" + "=" * 50))
+    input(c("Y", "\n[Enter] return to menu"))
+
 def main():
     cfg = load_config()
     if not cfg.get("brand", {}).get("name"):
@@ -246,7 +290,8 @@ def main():
         print("  5. Download Xray Core")
         print("  6. Global Config (brand/contact)")
         print("  7. Manage Packages (add/edit/delete)")
-        print("  8. Exit")
+        print("  8. VPS One-Click Deploy")
+        print("  9. Exit")
         print()
         ch = input("  > ").strip()
         if ch == "1": add_server_menu()
@@ -271,6 +316,8 @@ def main():
         elif ch == "7":
             package_menu()
         elif ch == "8":
+            vps_deploy_menu()
+        elif ch == "9":
             print(c("C", "\n  Bye!\n"))
             break
 
