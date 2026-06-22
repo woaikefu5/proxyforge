@@ -1,4 +1,4 @@
-<p align=""center"">
+<p align="center">
   <h1> 馒头的玄策</h1>
   <p><b>Xray 多协议管理 + 套餐卡一键生成</b></p>
   <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.2.0</code></p>
@@ -18,12 +18,12 @@
 
 ##  快速开始
 
-`ash
+```bash
 git clone https://github.com/woaikefu5/proxyforge.git
 cd proxyforge
 pip install -r requirements.txt
 python -m proxyforge.main
-`
+```
 
 >   **[详细中文教程  点这里](GUIDE.md)** / **[从零开始保姆级教程](TUTORIAL.md)**
 
@@ -56,17 +56,17 @@ python -m proxyforge.main
 
 ##  使用流程
 
-`
+```
  1  添加服务器      输入 VPS IP
  2  添加入站协议    选协议  填参数
  3  生成套餐卡      客户名 + 套餐  出图到桌面！
-`
+```
 
 ---
 
 ##  项目结构
 
-`
+```
 proxyforge/
   main.py           CLI 菜单
   config.py         配置管理
@@ -75,7 +75,7 @@ proxyforge/
   xray.py           Xray 下载器
   assets/           展示图
   GUIDE.md          详细中文教程
-`
+```
 
 ---
 
@@ -89,8 +89,8 @@ proxyforge/
 
 如果这个工具帮到了你，可以请我喝杯咖啡  
 
-<p align=""center"">
-  <img src="https://raw.githubusercontent.com/woaikefu5/proxyforge/main/assets/wechat-donate.jpg" width=""260"" alt=""微信打赏"">
+<p align="center">
+  <img src="https://raw.githubusercontent.com/woaikefu5/proxyforge/main/assets/wechat-donate.jpg" width="260" alt="微信打赏">
 </p>
 
 ---

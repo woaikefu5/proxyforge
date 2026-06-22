@@ -62,7 +62,8 @@
 买完 VPS 后，商家会给你：
 - **IP 地址**：如 192.168.1.1
 - **端口**：默认 22
-- **用户名**：默认 oot
+- **用户名**：默认 
+oot
 - **密码**：随机生成的密码（首次登录后建议修改）
 
 打开 FinalShell，新建连接，填上 IP、端口、用户名、密码，点连接。
@@ -75,9 +76,9 @@
 
 SSH 登录后，直接复制粘贴这条命令：
 
-`ash
+```bash
 bash <(wget -qO- https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh)
-`
+```
 
 按照提示操作：
 1. 选 1（安装）
@@ -89,7 +90,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/mack-a/v2ray-agent/master/ins
 
 安装完成后，脚本会输出：
 
-`
+```
 VLESS + Reality + Vision 配置：
   端口: 443（或你自定义的）
   协议: vless
@@ -99,7 +100,7 @@ VLESS + Reality + Vision 配置：
   publicKey: Pp6QrLALjluABmSyEjMq1...   ← 这就是 PBK
   shortId: 6ba85179e30d4fc2              ← 这就是 SID
   serverName: www.java.com               ← 这就是 SNI
-`
+```
 
 记下这三个参数：**PBK**、**SID**、**SNI**、**端口号**。后面要用。
 
@@ -111,38 +112,38 @@ VLESS + Reality + Vision 配置：
 
 在 VPS 上跑：
 
-`ash
+```bash
 bash <(curl -sL https://raw.githubusercontent.com/woaikefu5/proxyforge/main/vps/install.sh)
-`
+```
 
 ### 4.2 首次配置
 
 输入 xuance 进入管理系统，首次运行会提示：
 
-`
+```
 服务器IP:          ← 填你的 VPS 公网 IP
 端口 (默认443):     ← 填你的 Xray 端口
 Reality公钥(pbk):   ← 填第 3 步记下的 PBK
 回落SNI:           ← 填 SNI，默认回车
 shortId:           ← 填第 3 步记下的 SID
 Xray配置路径:       ← 默认 /etc/v2ray-agent/xray/conf/... 回车即可
-`
+```
 
 配置完就进主菜单了。
 
 ### 4.3 玄策菜单说明
 
-`
+```
 1. 查看  — 列出所有用户，显示流量使用
 2. 添加  — 添加新客户，自动生成 VLESS 链接
 3. 删除  — 删除用户
 4. 导出  — 导出所有用户链接
 5. 检查  — 流量统计 + 超额自动踢 + 30天到期自动踢
 6. 退出
-`
+```
 
 >   **强烈建议**：把「检查」加到 crontab 定时跑，例如每小时一次。
-> `ash
+> ```bash
 > echo "0 * * * * python3 /root/xuance.py -c 'cl()' 2>/dev/null" | crontab -
 > `
 
@@ -157,27 +158,27 @@ Xray配置路径:       ← 默认 /etc/v2ray-agent/xray/conf/... 回车即可
 
 ### 5.2 下载项目
 
-`ash
+```bash
 git clone https://github.com/woaikefu5/proxyforge.git
 cd proxyforge
 pip install -r requirements.txt
-`
+```
 
 > 不会用 Git？直接点 GitHub 页面上的绿色 "Code" → "Download ZIP"，解压后进目录。
 
 ### 5.3 运行
 
-`ash
+```bash
 python -m proxyforge.main
-`
+```
 
 ### 5.4 首次配置
 
 自动弹出设置：
-`
+```
 Brand name: 你的品牌名（如 "极速云"）
 Contact: 你的联系方式（如 "@jisuyun"）
-`
+```
 
 ### 5.5 添加服务器和协议
 
@@ -187,12 +188,12 @@ Contact: 你的联系方式（如 "@jisuyun"）
 
 按 7 进入套餐管理，预设你的套餐：
 
-`
+```
 轻量   100GB/月  ￥25
 标准   200GB/月  ￥45
 进阶   500GB/月  ￥90
 旗舰   1000GB/月 ￥150
-`
+```
 
 ---
 
@@ -204,24 +205,24 @@ Contact: 你的联系方式（如 "@jisuyun"）
 
 ### Step 2 — VPS 上添加用户
 
-`ash
+```bash
 xuance
 > 2                          # 选添加
 昵称: zhangsan               # 客户名
 流量上限GB: 200              # 套餐流量
-`
+```
 
 复制生成的那一串 less:// 开头的链接和 UUID。
 
 ### Step 3 — 桌面生成套餐卡
 
-`
+```
 python -m proxyforge.main
 > 3                          # 生成卡
 选服务器 → 选入站
 客户名: zhangsan
 选套餐: 标准 200GB
-`
+```
 
 桌面秒出 zhangsan_card.png 套餐卡！
 
@@ -237,11 +238,11 @@ python -m proxyforge.main
 
 ### 7.1 每天看一眼
 
-`ash
+```bash
 xuance
 > 5    # 检查流量 + 超额/到期自动处理
 > 1    # 查看所有用户状态
-`
+```
 
 ### 7.2 加新套餐
 
@@ -249,16 +250,16 @@ xuance
 
 ### 7.3 踢人
 
-`ash
+```bash
 xuance
 > 3    # 删除用户
-`
+```
 
 ### 7.4 备份数据库
 
-`ash
+```bash
 cp /root/xuance_users.db /root/xuance_users.db.bak
-`
+```
 
 ---
 
@@ -266,9 +267,9 @@ cp /root/xuance_users.db /root/xuance_users.db.bak
 
 ### Q: 客户说连不上
 A: 检查 VPS 端口是否开放：
-`ash
+```bash
 ss -tlnp | grep 你的端口
-`
+```
 如果没监听，重启 Xray：systemctl restart xray
 
 ### Q: 流量统计准吗
@@ -287,7 +288,7 @@ A: 微信/支付宝收款码，或者用 USDT（推荐 [Binance](https://binance
 
 ##  总结
 
-`
+```
   买 VPS（RackNerd /年）
        ↓
   装 Xray（bash 一键脚本，5 分钟）
@@ -297,7 +298,7 @@ A: 微信/支付宝收款码，或者用 USDT（推荐 [Binance](https://binance
   桌面装馒头的玄策（pip install，1 分钟）
        ↓
   设套餐 → 接单 → 出卡 → 收钱！
-`
+```
 
 **从 0 到卖节点，30 分钟全搞定。**
 

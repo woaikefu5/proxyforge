@@ -16,3 +16,10 @@ config.yaml
 # OS
 .DS_Store
 Thumbs.db
+# Video generation temp
+assets/frames/
+make_video.py
+
+# Build artifacts
+*.exe
+MantouXuance.spec

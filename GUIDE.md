@@ -25,12 +25,12 @@
 
 ## 2. 安装 馒头的玄策
 
-`ash
+```bash
 git clone https://github.com/woaikefu5/proxyforge.git
 cd proxyforge
 pip install -r requirements.txt
 python -m proxyforge.main
-`
+```
 
 ---
 
@@ -42,17 +42,17 @@ python -m proxyforge.main
 
 ## 4. 添加 VPS 服务器
 
-`
+```
 1. Add Server  输入服务器ID和IP
-`
+```
 
 ---
 
 ## 5. 配置入站协议
 
-`
+```
 2. Add Inbound  选服务器  选协议  填参数
-`
+```
 
 支持 VLESS+Reality / WS+TLS / gRPC / VMess / Trojan / Shadowsocks。
 
@@ -60,9 +60,9 @@ python -m proxyforge.main
 
 ## 6. 生成客户套餐卡
 
-`
+```
 3. Generate Card  选服务器  选入站  填客户名  选套餐  出图！
-`
+```
 
 套餐卡自动保存到桌面。
 
@@ -72,7 +72,7 @@ python -m proxyforge.main
 
 菜单按 7 进入套餐管理：
 
-`
+```
 [*] Package Management
 
   1. Light      100GB/month  Y25
@@ -80,7 +80,7 @@ python -m proxyforge.main
   3. Pro        500GB/month  Y90
 
   1. Add  2. Edit  3. Delete  4. Back
-`
+```
 
 或直接编辑 ~/.proxyforge/config.yaml 里的 packages:。
 
@@ -92,25 +92,25 @@ python -m proxyforge.main
 
 SSH 进 VPS，运行：
 
-`ash
+```bash
 curl -sL https://raw.githubusercontent.com/woaikefu5/proxyforge/main/vps/install.sh | bash
-`
+```
 
 ### 8.2 首次配置
 
-`ash
+```bash
 python3 /root/xuance.py
-`
+```
 
 首次运行会提示输入：服务器IP、端口、Reality公钥、SNI、shortId。
 
 ### 8.3 功能菜单
 
-`
-  === 丽萨 v3.0 ===
+```
+  === 玄策 v3.0 ===
 
   1.查看  2.添加  3.删除  4.导出  5.检查  6.退出
-`
+```
 
 | 菜单 | 功能 |
 |------|------|
@@ -135,13 +135,13 @@ python3 /root/xuance.py
 
 ## 9. 实战：卖节点的完整工作流
 
-`
+```
 客户下单  馒头的玄策 菜单7设套餐  VPS xuance 菜单2加用户  复制UUID
                                                                
 贴入馒头的玄策菜单3  套餐卡出图发客户  客户扫码即用
                                                                
 VPS xuance 菜单5 定期检查  超额/到期自动踢  收钱
-`
+```
 
 ---
 
@@ -151,9 +151,9 @@ VPS xuance 菜单5 定期检查  超额/到期自动踢  收钱
 
 A: Windows 自动用微软雅黑；Mac 用苹方；Linux：
 
-`ash
+```bash
 sudo apt install fonts-noto-cjk
-`
+```
 
 ### Q: "VPS 端 xuance 报错找不到配置"
 
