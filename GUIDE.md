@@ -1,9 +1,9 @@
-﻿#  ProxyForge 详细使用教程
+#  馒头的玄策 详细使用教程
 
 ##  目录
 
 1. [环境准备](#1-环境准备)
-2. [安装 ProxyForge](#2-安装-proxyforge)
+2. [安装 馒头的玄策](#2-安装-proxyforge)
 3. [首次运行 & 品牌配置](#3-首次运行--品牌配置)
 4. [添加 VPS 服务器](#4-添加-vps-服务器)
 5. [配置入站协议](#5-配置入站协议)
@@ -23,7 +23,7 @@
 
 ---
 
-## 2. 安装 ProxyForge
+## 2. 安装 馒头的玄策
 
 `ash
 git clone https://github.com/woaikefu5/proxyforge.git
@@ -136,9 +136,9 @@ python3 /root/lisa.py
 ## 9. 实战：卖节点的完整工作流
 
 `
-客户下单  ProxyForge 菜单7设套餐  VPS lisa 菜单2加用户  复制UUID
+客户下单  馒头的玄策 菜单7设套餐  VPS lisa 菜单2加用户  复制UUID
                                                                
-贴入ProxyForge菜单3  套餐卡出图发客户  客户扫码即用
+贴入馒头的玄策菜单3  套餐卡出图发客户  客户扫码即用
                                                                
 VPS lisa 菜单5 定期检查  超额/到期自动踢  收钱
 `

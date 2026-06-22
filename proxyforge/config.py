@@ -5,7 +5,7 @@ from pathlib import Path
 
 DEFAULT_CONFIG = {
     "brand": {
-        "name": "我的节点",
+        "name": "馒头的玄策",
         "contact": "@your_telegram",
         "logo_text": ""
     },

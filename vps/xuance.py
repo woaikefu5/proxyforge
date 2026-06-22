@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python3
-"""丽萨 · 用户管理系统 v3.0
-将此文件放到你的 VPS 上: /root/lisa.py
+"""玄策 · 用户管理系统 v3.0
+将此文件放到你的 VPS 上: /root/xuance.py
 首次运行会自动提示配置服务器信息。
 """
 
@@ -15,9 +15,9 @@ FLOW = "xtls-rprx-vision"
 PBK = "你的Reality公钥"
 SNI = "www.java.com"
 SID = "你的shortId"
-DB = "/root/lisa_users.db"
+DB = "/root/xuance_users.db"
 
-CONFIG_FILE = "/root/lisa_config.json"
+CONFIG_FILE = "/root/xuance_config.json"
 
 def first_run():
     """首次运行引导"""
@@ -150,7 +150,7 @@ def cl():
 
 # ========== 主菜单 ==========
 first_run()
-print('  === 丽萨 v3.0 ===')
+print('  === 玄策 v3.0 ===')
 while True:
     print('\n  1.查看  2.添加  3.删除  4.导出  5.检查  6.退出')
     c = input('  > ').strip()

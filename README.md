@@ -1,5 +1,5 @@
-﻿<p align=""center"">
-  <h1> ProxyForge</h1>
+<p align=""center"">
+  <h1> 馒头的玄策</h1>
   <p><b>Xray 多协议管理 + 套餐卡一键生成</b></p>
   <p><code>Python 3.9+</code> · <code>Win / Mac / Linux</code> · <code>MIT</code> · <code>v1.0.0</code></p>
 </p>
@@ -8,7 +8,7 @@
 
 ## 这是什么？
 
-**ProxyForge** — 给节点主用的工具箱。
+**馒头的玄策** — 给节点主用的工具箱。
 
 > 添加服务器  配置协议  生成带二维码的客户套餐卡，三步搞定。
 

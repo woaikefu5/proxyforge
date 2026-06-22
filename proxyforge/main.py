@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ProxyForge - Xray + Card Generator"""
+"""馒头的玄策 - Xray多协议管理+套餐卡生成"""
 
 import os, sys
 if sys.platform == "win32":
@@ -16,8 +16,8 @@ def c(tag, text): return f"{C.get(tag, '')}{text}{C['W']}"
 def banner():
     print()
     print(c("C", "=" * 42))
-    print(c("C", "   ProxyForge v1.2.0"))
-    print(c("C", "   Xray / Card Generator"))
+    print(c("C", "   馒头的玄策 v1.2.0"))
+    print(c("C", "   Xray / 套餐卡 / VPS管理"))
     print(c("C", "=" * 42))
     print()
 
