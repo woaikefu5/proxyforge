@@ -1,17 +1,45 @@
-"""馒头的玄策 - 套餐卡 + 二维码生成"""
-import os
+﻿# -*- coding: utf-8 -*-
+"""馒头的玄策 - 套餐卡 + 二维码生成器 (跨平台字体)"""
+import os, sys, platform
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
 
 def _get_fonts():
-    font_paths = [
-        "C:/Windows/Fonts/msyh.ttc",
-        "C:/Windows/Fonts/simhei.ttf",
-        "C:/Windows/Fonts/simsun.ttc",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
-        "/System/Library/Fonts/PingFang.ttc",
-    ]
+    system = platform.system()
+    font_paths = []
+    
+    if system == "Windows":
+        font_paths = [
+            "C:/Windows/Fonts/msyh.ttc",
+            "C:/Windows/Fonts/simhei.ttf",
+            "C:/Windows/Fonts/msyhbd.ttc",
+            "C:/Windows/Fonts/simsun.ttc",
+        ]
+    elif system == "Darwin":  # macOS
+        font_paths = [
+            "/System/Library/Fonts/PingFang.ttc",
+            "/System/Library/Fonts/STHeiti Light.ttc",
+            "/Library/Fonts/Arial Unicode.ttf",
+        ]
+    else:  # Linux
+        import subprocess
+        result = subprocess.run(["fc-list", ":lang=zh"], capture_output=True, text=True, timeout=5)
+        if result.stdout:
+            for line in result.stdout.split("\n"):
+                path = line.split(":")[0].strip()
+                if path:
+                    font_paths.append(path)
+                    if len(font_paths) >= 5:
+                        break
+        if not font_paths:
+            font_paths = [
+                "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+                "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+                "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+                "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
+            ]
+    
     for fp in font_paths:
         if os.path.exists(fp):
             try:
@@ -23,6 +51,8 @@ def _get_fonts():
                 )
             except:
                 pass
+    # Fallback to default if no Chinese font found
+    print("WARNING: No Chinese font found, text may show as boxes")
     return (ImageFont.load_default(),) * 4
 
 
@@ -47,7 +77,7 @@ def generate_card(name, link, package_info, output_path,
     draw = ImageDraw.Draw(card)
 
     draw.line([(30, 75), (770, 75)], fill="#e94560", width=2)
-    draw.text((40, 25), f"{brand_name} .套餐卡", fill="#e94560", font=font_title)
+    draw.text((40, 25), f"{brand_name} · 套餐卡", fill="#e94560", font=font_title)
 
     traffic = package_info.get("traffic", "")
     price = package_info.get("price", 0)
@@ -56,7 +86,7 @@ def generate_card(name, link, package_info, output_path,
     info = [
         (f"客户: {name}", 95),
         (f"流量: {traffic}/{duration}", 135),
-        (f"价格: Y{price}/{duration}", 175),
+        (f"价格: ¥{price}/{duration}", 175),
     ]
     if features:
         for i, feat in enumerate(features):
@@ -75,7 +105,7 @@ def generate_card(name, link, package_info, output_path,
     draw.text((40, 575), "扫码导入 即开即用", fill="#aaaaaa", font=font_body)
     draw.text((40, 610), f"联系: {contact}", fill="#aaaaaa", font=font_small)
     draw.text((40, 632), "免责: 仅供学习交流 · 使用与本人无关", fill="#777777", font=font_small)
-    draw.text((40, 640), "Powered by 馒头的玄策 | woaikefu5@gmail.com | github.com/woaikefu5/proxyforge",
+    draw.text((40, 640), "Powered by 馒头的玄策 | woaikefu5@gmail.com",
               fill="#555555", font=font_small)
 
     card.save(output_path)
