@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
-"""馒头的玄策 - 套餐卡 + 二维码生成器 (跨平台字体)"""
-import os, sys, platform
+"""馒头的玄策 - 套餐卡 + 二维码 + Clash配置 生成器"""
+import os, sys, platform, json
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
@@ -11,48 +11,37 @@ def _get_fonts():
     
     if system == "Windows":
         font_paths = [
-            "C:/Windows/Fonts/msyh.ttc",
-            "C:/Windows/Fonts/simhei.ttf",
-            "C:/Windows/Fonts/msyhbd.ttc",
-            "C:/Windows/Fonts/simsun.ttc",
+            "C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/simhei.ttf",
+            "C:/Windows/Fonts/msyhbd.ttc", "C:/Windows/Fonts/simsun.ttc",
         ]
-    elif system == "Darwin":  # macOS
+    elif system == "Darwin":
         font_paths = [
             "/System/Library/Fonts/PingFang.ttc",
             "/System/Library/Fonts/STHeiti Light.ttc",
-            "/Library/Fonts/Arial Unicode.ttf",
         ]
-    else:  # Linux
+    else:
         import subprocess
         result = subprocess.run(["fc-list", ":lang=zh"], capture_output=True, text=True, timeout=5)
         if result.stdout:
             for line in result.stdout.split("\n"):
                 path = line.split(":")[0].strip()
-                if path:
+                if path and path not in font_paths:
                     font_paths.append(path)
-                    if len(font_paths) >= 5:
-                        break
         if not font_paths:
             font_paths = [
                 "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
-                "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
                 "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
-                "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
             ]
     
     for fp in font_paths:
         if os.path.exists(fp):
             try:
                 return (
-                    ImageFont.truetype(fp, 36),
-                    ImageFont.truetype(fp, 22),
-                    ImageFont.truetype(fp, 18),
-                    ImageFont.truetype(fp, 28),
+                    ImageFont.truetype(fp, 36), ImageFont.truetype(fp, 22),
+                    ImageFont.truetype(fp, 18), ImageFont.truetype(fp, 28),
                 )
             except:
                 pass
-    # Fallback to default if no Chinese font found
-    print("WARNING: No Chinese font found, text may show as boxes")
     return (ImageFont.load_default(),) * 4
 
 
@@ -71,9 +60,7 @@ def generate_card(name, link, package_info, output_path,
                   brand_name="馒头的玄策", contact="woaikefu5@gmail.com",
                   features=None):
     font_title, font_body, font_small, font_link = _get_fonts()
-
-    card_w, card_h = 800, 650
-    card = Image.new("RGB", (card_w, card_h), "#0f0f23")
+    card = Image.new("RGB", (800, 650), "#0f0f23")
     draw = ImageDraw.Draw(card)
 
     draw.line([(30, 75), (770, 75)], fill="#e94560", width=2)
@@ -82,15 +69,17 @@ def generate_card(name, link, package_info, output_path,
     traffic = package_info.get("traffic", "")
     price = package_info.get("price", 0)
     duration = package_info.get("duration", "月")
+    protocol = package_info.get("protocol", "")
 
-    info = [
-        (f"客户: {name}", 95),
-        (f"流量: {traffic}/{duration}", 135),
-        (f"价格: ¥{price}/{duration}", 175),
-    ]
+    info = [(f"客户: {name}", 95)]
+    if protocol:
+        info.append((f"协议: {protocol}", 130))
+    info += [(f"流量: {traffic}/{duration}", 170),
+             (f"价格: ¥{price}/{duration}", 210)]
+
     if features:
         for i, feat in enumerate(features):
-            info.append((f"  {feat}", 215 + i * 35))
+            info.append((f"  {feat}", 250 + i * 35))
 
     for text, y in info:
         draw.text((40, y), text, fill="#ffffff", font=font_body)
@@ -100,25 +89,77 @@ def generate_card(name, link, package_info, output_path,
 
     short = link[:60] + "..." if len(link) > 63 else link
     draw.text((40, 420), short, fill="#888888", font=font_small)
-
     draw.line([(30, 560), (770, 560)], fill="#e94560", width=1)
     draw.text((40, 575), "扫码导入 即开即用", fill="#aaaaaa", font=font_body)
     draw.text((40, 610), f"联系: {contact}", fill="#aaaaaa", font=font_small)
     draw.text((40, 632), "免责: 仅供学习交流 · 使用与本人无关", fill="#777777", font=font_small)
-    draw.text((40, 640), "Powered by 馒头的玄策 | woaikefu5@gmail.com",
+    draw.text((40, 640), f"Powered by {brand_name} | {contact}",
               fill="#555555", font=font_small)
-
     card.save(output_path)
     return output_path
 
 
-def generate_customer_card(name, uuid, link, package_info,
-                           brand_name, contact, output_dir, features=None):
+def generate_clash_yaml(name, server, port, username, password, output_path,
+                        protocol="http", brand_name="馒头的玄策"):
+    """生成Clash Verge兼容的YAML配置文件"""
+    node_name = f"{brand_name} {name}"
+    yaml = f"""# Clash Verge 配置 - {brand_name}
+# 生成时间: 即开即用
+# 注意: 流量耗尽或到期后此配置失效
+
+port: 7890
+socks-port: 7891
+allow-lan: true
+mode: Rule
+log-level: info
+
+proxies:
+  - name: "{node_name}"
+    type: {protocol}
+    server: {server}
+    port: {port}
+    username: {username}
+    password: {password}
+    udp: false
+"""
+    if protocol == "http":
+        yaml += "    tls: false\n"
+    
+    yaml += f"""
+proxy-groups:
+  - name: Proxy
+    type: select
+    proxies:
+      - "{node_name}"
+
+rules:
+  - MATCH,Proxy
+"""
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(yaml)
+    return output_path
+
+
+def generate_all(name, protocol, server, port, username, password,
+                 package_info, output_dir, brand_name="馒头的玄策",
+                 contact="woaikefu5@gmail.com", features=None):
+    """生成全套：二维码 + 套餐卡图片 + Clash YAML配置"""
     os.makedirs(output_dir, exist_ok=True)
-    safe_name = "".join(c for c in name if c.isalnum() or c in "_-")
-    qr_path = os.path.join(output_dir, f"{safe_name}_QR.png")
-    card_path = os.path.join(output_dir, f"{safe_name}_card.png")
+    safe = "".join(c for c in name if c.isalnum() or c in "_-")
+    
+    if protocol == "http":
+        link = f"http://{username}:{password}@{server}:{port}"
+    else:
+        link = f"vless://{username}@{server}:{port}?type=tcp&security=reality"
+    
+    qr_path = os.path.join(output_dir, f"{safe}_QR.png")
+    card_path = os.path.join(output_dir, f"{safe}_card.png")
+    yaml_path = os.path.join(output_dir, f"{safe}_clash.yaml")
+    
     generate_qr(link, qr_path)
     generate_card(name, link, package_info, card_path,
                   brand_name=brand_name, contact=contact, features=features)
-    return card_path, qr_path
+    generate_clash_yaml(name, server, port, username, password, yaml_path,
+                        protocol=protocol, brand_name=brand_name)
+    
+    return {"qr": qr_path, "card": card_path, "clash": yaml_path}
