@@ -1,168 +1,226 @@
 #!/usr/bin/env python3
-"""玄策 · 用户管理系统 v3.0
-将此文件放到你的 VPS 上: /root/xuance.py
-首次运行会自动提示配置服务器信息。
-"""
+"""玄策 · 用户管理系统 v4.0 — 日志流量统计 + 充值续费"""
 
-import json, subprocess, re, os
+import json, subprocess, os, sys, re
 from datetime import datetime, timedelta
 
-# ========== 配置区（首次运行自动生成） ==========
 CONF = "/etc/v2ray-agent/xray/conf/07_VLESS_vision_reality_inbounds.json"
-HOST = "你的服务器IP"
-PORT = "443"
-FLOW = "xtls-rprx-vision"
-PBK = "你的Reality公钥"
-SNI = "www.java.com"
-SID = "你的shortId"
-DB = "/root/xuance_users.db"
-
+API_PORT = 62789
+DB = "/root/xuance_users.json"
 CONFIG_FILE = "/root/xuance_config.json"
+OLD_DB = "/root/xuance_users.db"
 
-def first_run():
-    """首次运行引导"""
+HOST = PORT = FLOW = PBK = SNI = SID = ""
+XRAY_BIN = "/etc/v2ray-agent/xray/xray"
+
+def run(cmd):
+    return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
+
+def run_get_exit(cmd):
+    p = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    return p.stdout.strip(), p.returncode
+
+def load_server_config():
     global HOST, PORT, FLOW, PBK, SNI, SID, CONF
     if os.path.exists(CONFIG_FILE):
         cfg = json.load(open(CONFIG_FILE))
-        HOST = cfg.get("host", HOST)
-        PORT = cfg.get("port", PORT)
-        FLOW = cfg.get("flow", FLOW)
-        PBK = cfg.get("pbk", PBK)
-        SNI = cfg.get("sni", SNI)
-        SID = cfg.get("sid", SID)
-        if cfg.get("conf"):
-            CONF = cfg["conf"]
-        return
+        HOST = cfg.get("host", "")
+        PORT = cfg.get("port", "443")
+        FLOW = cfg.get("flow", "xtls-rprx-vision")
+        PBK = cfg.get("pbk", "")
+        SNI = cfg.get("sni", "www.java.com")
+        SID = cfg.get("sid", "")
+        if cfg.get("conf"): CONF = cfg["conf"]
+    if not HOST: first_run()
+
+def first_run():
+    global HOST, PORT, PBK, SNI, SID, CONF
     print("\n=== 首次运行 · 配置 ===\n")
-    HOST = input("  服务器IP: ").strip()
-    PORT = input("  端口 (默认443): ").strip() or "443"
-    PBK = input("  Reality公钥(pbk): ").strip()
-    SNI = input("  回落SNI (默认www.java.com): ").strip() or "www.java.com"
-    SID = input("  shortId: ").strip()
+    h = input("  服务器IP: ").strip()
+    p = input("  端口 (默认443): ").strip() or "443"
+    pbk = input("  Reality公钥(pbk): ").strip()
+    sni = input("  回落SNI (默认www.java.com): ").strip() or "www.java.com"
+    sid = input("  shortId: ").strip()
     cf = input(f"  Xray配置路径 (默认{CONF}): ").strip()
-    if cf:
-        CONF = cf
-    json.dump({"host": HOST, "port": PORT, "flow": FLOW, "pbk": PBK, "sni": SNI, "sid": SID, "conf": CONF}, open(CONFIG_FILE, "w"), indent=2)
-    print("  配置已保存到 " + CONFIG_FILE)
-    print(f"  Xray配置: {CONF}")
+    HOST, PORT, PBK, SNI, SID = h, p, pbk, sni, sid
+    if cf: CONF = cf
+    json.dump({"host": h, "port": p, "flow": "xtls-rprx-vision", "pbk": pbk, "sni": sni, "sid": sid, "conf": CONF},
+              open(CONFIG_FILE, "w"), indent=2)
+    print("  配置已保存")
 
-# ========== 工具函数 ==========
-def run(c):
-    return subprocess.run(c, shell=True, capture_output=True, text=True).stdout.strip()
+def load_db():
+    if os.path.exists(DB): return json.load(open(DB))
+    if os.path.exists(OLD_DB): return migrate_old_db()
+    return {"version": 2, "users": []}
 
-def ld():
-    d = {}
-    if os.path.exists(DB):
-        for l in open(DB).read().strip().split('\n'):
-            p = l.strip().split('|')
-            if len(p) >= 5:
-                d[p[1]] = {'n': p[0], 'l': p[2], 'd': p[3], 'u': int(p[4])}
-    return d
+def save_db(data):
+    json.dump(data, open(DB, "w"), indent=2)
 
-def sv(db):
-    with open(DB, 'w') as f:
-        for k, v in db.items():
-            f.write(v['n'] + '|' + k + '|' + v['l'] + '|' + v['d'] + '|' + str(v['u']) + '\n')
+def migrate_old_db():
+    users = []
+    xc = json.load(open(CONF))
+    xray_emails = [c["email"] for c in xc["inbounds"][1]["settings"]["clients"]]
+    for line in open(OLD_DB).read().strip().split("\n"):
+        parts = line.strip().split("|")
+        if len(parts) < 5: continue
+        name = parts[0]
+        if name not in xray_emails:
+            print(f"  跳过: {name} (不在Xray配置中)"); continue
+        try:
+            reg = datetime.strptime(parts[3], "%Y-%m-%d")
+            expiry = (reg + timedelta(days=30)).strftime("%Y-%m-%d")
+        except:
+            expiry = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
+        users.append({"uuid": parts[1], "name": name, "limit_gb": float(parts[2].replace("GB","")),
+                       "used_bytes": int(parts[4]), "reg_date": parts[3], "expiry_date": expiry, "active": True})
+    data = {"version": 2, "users": users}
+    save_db(data); os.rename(OLD_DB, OLD_DB + ".bak")
+    print(f"  已迁移 {len(users)} 个用户"); return data
 
-def lu():
-    d = json.load(open(CONF))
-    db = ld()
-    cs = d['inbounds'][1]['settings']['clients']
-    print(f'\n  用户 ({len(cs)}):')
-    for i, c in enumerate(cs):
-        u = db.get(c['id'], {'u': 0, 'l': '?'})
-        used = u['u'] // 1073741824
-        limit = u['l'].replace('GB','')
-        print(f'  {i+1}. {c["email"]:<25} {used}GB/{limit}GB')
+def update_traffic(data):
+    """从 Xray 日志统计流量"""
+    try:
+        out = run("journalctl -u xray --no-pager --since '5 min ago' 2>/dev/null | grep accepted")
+        counts = {}
+        for line in out.split("\n"):
+            m = re.search(r'email: (\S+)', line)
+            if m:
+                e = m.group(1)
+                counts[e] = counts.get(e, 0) + 1
+        for u in data["users"]:
+            if not u.get("active", True): continue
+            cnt = counts.get(u["name"], 0)
+            if cnt > 0:
+                u["used_bytes"] += cnt * 5242880  # ~5MB per connection
+    except: pass
+    return data
 
-def ad():
-    n = input('  昵称: ').strip()
-    l = input('  流量上限GB: ').strip()
-    u = run('cat /proc/sys/kernel/random/uuid')
-    d = json.load(open(CONF))
-    d['inbounds'][1]['settings']['clients'].append({'id': u, 'email': n, 'flow': FLOW})
-    json.dump(d, open(CONF, 'w'), indent=2)
-    db = ld()
-    db[u] = {'n': n, 'l': l, 'd': str(datetime.now().date()), 'u': 0}
-    sv(db)
-    a = '&'; h = '#'
-    lk = f'vless://{u}@{HOST}:{PORT}?type=tcp{a}security=reality{a}flow={FLOW}{a}fp=chrome{a}pbk={PBK}{a}sni={SNI}{a}sid={SID}{h}{n}'
-    print(f'\n  [完成] {n} ({l}GB)\n  {lk}')
-    run('systemctl restart xray 2>/dev/null')
+def list_users(data):
+    data = update_traffic(data)
+    save_db(data)
+    users = [u for u in data["users"] if u.get("active", True)]
+    if not users: print("\n  暂无用户"); return
+    print(f"\n  用户 ({len(users)}):")
+    print(f"  {'#':<3} {'名称':<22} {'已用':<12} {'限额':<9} {'到期':<12} {'状态'}")
+    print(f"  {'-'*62}")
+    for i, u in enumerate(users, 1):
+        gb = u["used_bytes"] / 1073741824
+        lim = u["limit_gb"]
+        pct = gb / lim * 100 if lim > 0 else 0
+        try: expired = datetime.strptime(u.get("expiry_date","2099-01-01"), "%Y-%m-%d") < datetime.now()
+        except: expired = False
+        print(f"  {i:<3} {u['name']:<22} {gb:<7.2f}GB {pct:<4.1f}% {lim:<7.0f}GB {u.get('expiry_date','?'):<12} {'已过期' if expired else '正常'}")
+    save_db(data)
 
-def dl():
-    lu()
-    x = input('  删哪个: ').strip()
-    if not x: return
-    d = json.load(open(CONF))
-    idx = int(x) - 1
-    uid = d['inbounds'][1]['settings']['clients'][idx]['id']
-    del d['inbounds'][1]['settings']['clients'][idx]
-    json.dump(d, open(CONF, 'w'), indent=2)
-    db = ld()
-    if uid in db: del db[uid]
-    sv(db)
-    print('  已删除')
-    run('systemctl restart xray 2>/dev/null')
+def add_user(data):
+    name = input("  昵称: ").strip()
+    limit = input("  流量上限GB: ").strip()
+    days = input("  有效期天数 (默认30): ").strip() or "30"
+    uuid_val = run("cat /proc/sys/kernel/random/uuid")
+    try:
+        xc = json.load(open(CONF))
+        xc["inbounds"][1]["settings"]["clients"].append({"id": uuid_val, "email": name, "flow": "xtls-rprx-vision"})
+        json.dump(xc, open(CONF, "w"), indent=2)
+    except Exception as e:
+        print(f"  [X] 配置更新失败: {e}"); return
+    data["users"].append({"uuid": uuid_val, "name": name, "limit_gb": float(limit), "used_bytes": 0,
+                           "reg_date": datetime.now().strftime("%Y-%m-%d"),
+                           "expiry_date": (datetime.now() + timedelta(days=int(days))).strftime("%Y-%m-%d"),
+                           "active": True})
+    save_db(data)
+    print(f"\n  [OK] {name} ({limit}GB / {days}天)")
+    print(f"  {make_link(uuid_val, name)}")
+    run("systemctl restart xray 2>/dev/null")
 
-def ex():
-    d = json.load(open(CONF))
-    a = '&'; h = '#'
-    print('\n  导出链接:')
-    for c in d['inbounds'][1]['settings']['clients']:
-        lk = f'vless://{c["id"]}@{HOST}:{PORT}?type=tcp{a}security=reality{a}flow={FLOW}{a}fp=chrome{a}pbk={PBK}{a}sni={SNI}{a}sid={SID}{h}{c["email"]}'
-        print(f'  {lk}')
+def delete_user(data):
+    active = [u for u in data["users"] if u.get("active", True)]
+    if not active: print("\n  暂无用户"); return
+    print(f"\n  {'#':<3} {'名称':<25} {'UUID':<40}"); print(f"  {'-'*68}")
+    for i, u in enumerate(active, 1): print(f"  {i:<3} {u['name']:<25} {u['uuid']}")
+    idx = input("\n  删哪个: ").strip()
+    if not idx: return
+    try:
+        i = int(idx) - 1
+        target = active[i]
+        xc = json.load(open(CONF))
+        xc["inbounds"][1]["settings"]["clients"] = [c for c in xc["inbounds"][1]["settings"]["clients"] if c["id"] != target["uuid"]]
+        json.dump(xc, open(CONF, "w"), indent=2)
+        data["users"] = [u for u in data["users"] if u["uuid"] != target["uuid"]]
+        save_db(data)
+        print(f"  [OK] {target['name']} 已删除")
+        run("systemctl restart xray 2>/dev/null")
+    except: print("  [X] 无效选择")
 
-def cl():
-    """检查：流量统计 + 超额/到期自动停"""
-    # 流量统计
-    db = ld()
-    import re as _re
-    logs = run('journalctl -u xray --no-pager --since "5 min ago" | grep accepted').split('\n')
-    for l in logs:
-        m = _re.search(r'email: (\S+)', l)
-        if m:
-            nm = m.group(1)
-            for uid, v in db.items():
-                if v['n'] == nm: v['u'] += 5242880
-    sv(db)
+def recharge_user(data):
+    active = [u for u in data["users"] if u.get("active", True)]
+    if not active: print("\n  暂无用户"); return
+    print(f"\n  {'#':<3} {'名称':<22} {'已用':<12} {'限额':<10} {'到期':<12}")
+    print(f"  {'-'*59}")
+    for i, u in enumerate(active, 1):
+        print(f"  {i:<3} {u['name']:<22} {u['used_bytes']/1073741824:<8.2f}GB {u['limit_gb']:<8.0f}GB {u.get('expiry_date','?'):<12}")
+    idx = input("\n  充值哪个用户: ").strip()
+    if not idx: return
+    try:
+        i = int(idx) - 1
+        actual = next((u for u in data["users"] if u["uuid"] == active[i]["uuid"]), None)
+        if not actual: return
+        print(f"\n  用户: {actual['name']}")
+        print(f"  当前限额: {actual['limit_gb']}GB  已用: {actual['used_bytes']/1073741824:.2f}GB  到期: {actual.get('expiry_date','?')}")
+        add_gb = input("\n  充值流量 (GB): ").strip()
+        add_days = input("  续费天数 (默认30): ").strip() or "30"
+        actual["used_bytes"] = 0
+        actual["limit_gb"] = float(add_gb)
+        actual["expiry_date"] = (datetime.now() + timedelta(days=int(add_days))).strftime("%Y-%m-%d")
+        save_db(data)
+        print(f"\n  [OK] {actual['name']} 充值完成!")
+        print(f"  新限额: {actual['limit_gb']}GB  到期: {actual['expiry_date']}")
+        print(f"  {make_link(actual['uuid'], actual['name'])}")
+    except: print("  [X] 无效选择")
 
-    # 超额/到期检查
-    d = json.load(open(CONF))
-    db = ld()
-    rm = False
-    for c in d['inbounds'][1]['settings']['clients'][:]:
-        v = db.get(c['id'])
-        if v:
-            over = float(v['l'].replace('GB', ''))
-            usedGB = v['u'] // 1073741824
-            try:
-                reg = datetime.strptime(v['d'], '%Y-%m-%d')
-                expired = datetime.now() > reg + timedelta(days=30)
-            except:
-                expired = False
-            if usedGB >= over or expired:
-                r = '超限' if usedGB >= over else '到期'
-                d['inbounds'][1]['settings']['clients'].remove(c)
-                if c['id'] in db: del db[c['id']]
-                print(f'  [{r}] {c["email"]} 已停止')
-                rm = True
-    if rm:
-        json.dump(d, open(CONF, 'w'), indent=2)
-        sv(db)
-        run('systemctl restart xray 2>/dev/null')
-    else:
-        print('  全部正常')
+def export_links(data):
+    print()
+    for u in data["users"]:
+        if u.get("active", True): print(f"  {make_link(u['uuid'], u['name'])}")
 
-# ========== 主菜单 ==========
-first_run()
-print('  === 玄策 v3.0 ===')
-while True:
-    print('\n  1.查看  2.添加  3.删除  4.导出  5.检查  6.退出')
-    c = input('  > ').strip()
-    if c == '1': lu()
-    elif c == '2': ad()
-    elif c == '3': dl()
-    elif c == '4': ex()
-    elif c == '5': cl()
-    elif c == '6': break
+def check_all(data):
+    data = update_traffic(data)
+    xc = json.load(open(CONF))
+    clients = xc["inbounds"][1]["settings"]["clients"]
+    changed = False
+    for user in data["users"][:]:
+        if not user.get("active", True): continue
+        reason = None
+        if user["used_bytes"] / 1073741824 >= user["limit_gb"]: reason = "超额"
+        try:
+            if datetime.strptime(user["expiry_date"], "%Y-%m-%d") < datetime.now(): reason = "到期"
+        except: pass
+        if reason:
+            clients = [c for c in clients if c["id"] != user["uuid"]]
+            user["active"] = False
+            print(f"  [{reason}] {user['name']} 已停止"); changed = True
+    if changed:
+        xc["inbounds"][1]["settings"]["clients"] = clients
+        json.dump(xc, open(CONF, "w"), indent=2); save_db(data)
+        run("systemctl restart xray 2>/dev/null"); print("  Xray 已重启")
+    else: print("  全部正常")
+
+def make_link(uid, name):
+    return f"vless://{uid}@{HOST}:{PORT}?type=tcp&security=reality&flow={FLOW}&fp=chrome&pbk={PBK}&sni={SNI}&sid={SID}#{name}"
+
+def main():
+    load_server_config()
+    data = load_db()
+    print("\n  === 玄策 v4.0 ===")
+    while True:
+        print("\n  1.查看  2.添加  3.删除  4.充值  5.导出  6.检查  7.退出")
+        c = input("  > ").strip()
+        if c == "1": list_users(data)
+        elif c == "2": add_user(data)
+        elif c == "3": delete_user(data)
+        elif c == "4": recharge_user(data)
+        elif c == "5": export_links(data)
+        elif c == "6": check_all(data)
+        elif c == "7": print("\n  Bye!\n"); break
+
+if __name__ == "__main__":
+    main()
