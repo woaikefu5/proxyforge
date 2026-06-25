@@ -1,0 +1,16 @@
+﻿version: "3.8"
+
+services:
+  xuance:
+    build: .
+    container_name: xuance
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data:/data
+    environment:
+      - XUANCE_HOST=YOUR_SERVER_IP
+      - XUANCE_PORT=443
+      - XUANCE_PBK=YOUR_PUBLIC_KEY
+      - XUANCE_SNI=www.java.com
+      - XUANCE_SID=YOUR_SHORT_ID

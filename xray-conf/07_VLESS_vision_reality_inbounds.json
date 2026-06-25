@@ -1,0 +1,91 @@
+{
+  "inbounds": [
+    {
+      "tag": "dokodemo-in-VLESSReality",
+      "port": 443,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1",
+        "port": 45987,
+        "network": "tcp"
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "tls"
+        ],
+        "routeOnly": true
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 45987,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "YOUR_ADMIN_UUID",
+            "email": "xuance-admin",
+            "flow": "xtls-rprx-vision",
+            "level": 0
+          },
+          {
+            "id": "YOUR_ADMIN_UUID",
+            "email": "example-user",
+            "flow": "xtls-rprx-vision",
+            "level": 0
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": []
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "target": "www.java.com:443",
+          "xver": 0,
+          "serverNames": [
+            "www.java.com"
+          ],
+          "privateKey": "YOUR_PRIVATE_KEY",
+          "publicKey": "YOUR_PUBLIC_KEY",
+          "maxTimeDiff": 70000,
+          "shortIds": [
+            "",
+            "YOUR_SHORT_ID"
+          ]
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "routeOnly": true
+      }
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "inboundTag": [
+          "dokodemo-in"
+        ],
+        "domain": [
+          "www.java.com"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "inboundTag": [
+          "dokodemo-in"
+        ],
+        "outboundTag": "blackhole"
+      }
+    ]
+  }
+}

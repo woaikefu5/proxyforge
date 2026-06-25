@@ -1,0 +1,20 @@
+{
+  "stats": {},
+  "api": {
+    "tag": "direct",
+    "services": [
+      "StatsService"
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 62789,
+      "protocol": "dokodemo-door",
+      "tag": "api-in",
+      "settings": {
+        "address": "127.0.0.1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=XuanCe Web Panel
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /root/xuance_web.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

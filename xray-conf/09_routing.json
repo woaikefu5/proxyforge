@@ -1,0 +1,21 @@
+{
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "domain:gstatic.com",
+          "domain:googleapis.com"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "api-in"
+        ],
+        "outboundTag": "direct"
+      }
+    ]
+  }
+}

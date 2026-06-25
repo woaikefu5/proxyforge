@@ -1,0 +1,26 @@
+﻿# Sensitive configs (keep out of repo)
+xuance_config.json
+xuance_users.json
+xuance_admin.json
+xuance_web_pass.json
+xuance_bot_token.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+data/
