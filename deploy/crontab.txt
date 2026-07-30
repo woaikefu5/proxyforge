@@ -1,0 +1,3 @@
+26 5,11,17,23 * * * "/root/.acme.sh"/acme.sh --cron --home "/root/.acme.sh" > /dev/null
+0 * * * * python3 /root/xuance.py check 2>/dev/null
+* * * * * python3 /root/xuance_traffic_daemon.py
