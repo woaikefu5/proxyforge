@@ -1,41 +1,63 @@
-﻿#!/bin/bash
-# XuanCe 完美版一键部署
-# 前提：已安装 Xray (mack-a脚本) + Python3
+#!/bin/bash
+set -e
+echo "=== XuanCe Deploy ==="
+cp xuance_traffic_daemon.py /root/
+cp xuance_web.py /root/
+cp xuance_config.json /root/
+chmod +x /root/xuance_web.py /root/xuance_traffic_daemon.py
 
-echo "=== XuanCe 完美版部署 ==="
+# Auto-fill xuance_config.json from Xray config
+SERVER_IP=
+DOKO_PORT=
+PBK=
+SNI=
+SID=
+python3 -c "import json;c=json.load(open(/root/xuance_config.json));c[host]=;c[port]=str();c[pbk]=;c[sni]=;c[sid]=;json.dump(c,open(/root/xuance_config.json,w),indent=2)"
 
-# 1. 部署 xuance daemon (流量统计)
-cp xuance_traffic_daemon.py /root/xuance_traffic_daemon.py
-chmod +x /root/xuance_traffic_daemon.py
+# Init DB
+if [ ! -f /root/xuance_users.json ]; then
+    echo version:2 > /root/xuance_users.json
+fi
 
-# 2. 部署 web 面板
-cp xuance_web.py /usr/local/bin/xuance_web
-chmod +x /usr/local/bin/xuance_web
+# Install service
+cp xuance-web.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable xuance-web
+systemctl restart xuance-web
 
-# 3. Xray API路由修复 (防gRPC被劫持)
-python3 -c "
-import json
-cfg = json.load(open('/etc/v2ray-agent/xray/config.json'))
-rules = cfg['routing']['rules']
-has_api = any('api' in str(r.get('inboundTag','')) for r in rules)
-if not has_api:
-    rules.insert(0, {'type':'field','inboundTag':['api'],'outboundTag':'api'})
-    json.dump(cfg, open('/etc/v2ray-agent/xray/config.json','w'), indent=2)
-    print('API路由规则已添加')
-else:
-    print('API路由规则已存在')
-"
+# Cron
+(crontab -l 2>/dev/null | grep -v xuance_traffic_daemon; echo "*/5 * * * * python3 /root/xuance_traffic_daemon.py") | crontab -
 
-# 4. 设置 cron
-(crontab -l 2>/dev/null | grep -v xuance; echo '* * * * * python3 /root/xuance_traffic_daemon.py') | crontab -
+echo "=== Done: http:// ==="
+ #!/bin/bash
+set -e
+echo "=== XuanCe Deploy ==="
+cp xuance_traffic_daemon.py /root/
+cp xuance_web.py /root/
+cp xuance_config.json /root/
+chmod +x /root/xuance_web.py /root/xuance_traffic_daemon.py
 
-# 5. 重启服务
-pkill -f xuance_web 2>/dev/null
-sleep 1
-nohup python3 /usr/local/bin/xuance_web > /dev/null 2>&1 &
-systemctl restart xray
+# Auto-fill xuance_config.json from Xray config
+SERVER_IP=
+DOKO_PORT=
+PBK=
+SNI=
+SID=
+python3 -c "import json;c=json.load(open(/root/xuance_config.json));c[host]=;c[port]=str();c[pbk]=;c[sni]=;c[sid]=;json.dump(c,open(/root/xuance_config.json,w),indent=2)"
 
-echo "=== 部署完成 ==="
-echo "管理面板: http://服务器IP:8318/admin"
-echo "用户面板: http://服务器IP:8318/user"
-echo "后台密码: admin123456"
+# Init DB
+if [ ! -f /root/xuance_users.json ]; then
+    echo users:[] > /root/xuance_users.json
+fi
+
+# Install service
+cp xuance-web.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable xuance-web
+systemctl restart xuance-web
+
+# Cron
+(crontab -l 2>/dev/null | grep -v xuance_traffic_daemon; echo "*/5 * * * * python3 /root/xuance_traffic_daemon.py") | crontab -
+
+echo "=== Done: http:// ==="
+

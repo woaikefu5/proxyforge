@@ -1,0 +1,8 @@
+{
+  "host": "__SERVER_IP__",
+  "port": "__DOKODEMO_PORT__",
+  "pbk": "__PUBLIC_KEY__",
+  "sni": "__REALITY_SNI__",
+  "sid": "__SHORT_ID__",
+  "flow": "xtls-rprx-vision"
+}

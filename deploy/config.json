@@ -1,29 +1,46 @@
-﻿{
+{
   "log": {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
+    "error": "/etc/v2ray-agent/xray/error.log",
     "loglevel": "warning",
     "dnsLog": false
+  },
+  "stats": {},
+  "dns": {
+    "servers": [
+      "localhost"
+    ]
+  },
+  "policy": {
+    "levels": {
+      "0": {
+        "handshake": 3,
+        "connIdle": 272,
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    }
   },
   "inbounds": [
     {
       "tag": "dokodemo-in-VLESSReality",
-      "port": 25052,
+      "port": "__DOKODEMO_PORT__",
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1",
-        "port": 45987,
+        "port": "__VLESS_PORT__",
         "network": "tcp"
       },
       "sniffing": {
         "enabled": true,
-        "destOverride": ["tls"],
+        "destOverride": [
+          "tls"
+        ],
         "routeOnly": true
       }
     },
     {
       "listen": "127.0.0.1",
-      "port": 45987,
+      "port": "__VLESS_PORT__",
       "protocol": "vless",
       "settings": {
         "clients": [],
@@ -35,33 +52,48 @@
         "security": "reality",
         "realitySettings": {
           "show": false,
-          "target": "www.swift.com:443",
+          "target": "__REALITY_TARGET__",
           "xver": 0,
-          "serverNames": ["www.swift.com"],
-          "privateKey": "YOUR_PRIVATE_KEY_HERE",
-          "publicKey": "YOUR_PUBLIC_KEY_HERE",
-          "shortIds": ["", "YOUR_SHORT_ID_HERE"],
-          "maxTimeDiff": 70000
+          "serverNames": [
+            "__REALITY_SNI__"
+          ],
+          "privateKey": "__PRIVATE_KEY__",
+          "publicKey": "__PUBLIC_KEY__",
+          "mldsa65Seed": "",
+          "mldsa65Verify": "",
+          "maxTimeDiff": 70000,
+          "shortIds": [
+            "",
+            "__SHORT_ID__"
+          ]
         }
       },
       "sniffing": {
         "enabled": true,
-        "destOverride": ["http", "tls", "quic"],
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
         "routeOnly": true
       }
     },
     {
+      "tag": "api",
       "listen": "127.0.0.1",
       "port": 8080,
       "protocol": "dokodemo-door",
-      "settings": { "address": "127.0.0.1" },
-      "tag": "api"
+      "settings": {
+        "address": "127.0.0.1"
+      }
     }
   ],
   "outbounds": [
     {
       "protocol": "freedom",
-      "settings": { "domainStrategy": "UseIP" },
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
       "tag": "z_direct_outbound"
     },
     {
@@ -73,34 +105,41 @@
     "rules": [
       {
         "type": "field",
-        "inboundTag": ["api"],
+        "inboundTag": [
+          "api"
+        ],
         "outboundTag": "api"
       },
       {
         "type": "field",
-        "outboundTag": "z_direct_outbound",
-        "network": "tcp,udp"
+        "domain": [
+          "domain:gstatic.com",
+          "domain:googleapis.com",
+          "domain:googleapis.cn"
+        ],
+        "outboundTag": "z_direct_outbound"
+      },
+      {
+        "inboundTag": [
+          "dokodemo-in-VLESSReality"
+        ],
+        "domain": [
+          "__REALITY_SNI__"
+        ],
+        "outboundTag": "z_direct_outbound"
+      },
+      {
+        "inboundTag": [
+          "dokodemo-in-VLESSReality"
+        ],
+        "outboundTag": "blackhole_out"
       }
     ]
   },
-  "dns": { "servers": ["localhost"] },
-  "stats": {},
-  "policy": {
-    "levels": {
-      "0": {
-        "handshake": 1,
-        "connIdle": 295,
-        "statsUserUplink": true,
-        "statsUserDownlink": true
-      }
-    },
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
   "api": {
     "tag": "api",
-    "services": ["HandlerService", "LoggerService", "StatsService"]
+    "services": [
+      "StatsService"
+    ]
   }
 }
