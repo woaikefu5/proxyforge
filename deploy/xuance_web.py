@@ -202,7 +202,14 @@ input{padding:7px 10px;border-radius:6px;border:1px solid #334155;background:#0f
 .lb{background:#0f172a;border-radius:6px;padding:6px 8px;font-size:11px;word-break:break-all;color:#94a3b8;margin-top:2px;max-width:400px;overflow-wrap:break-word;cursor:pointer}
 .hidden{display:none}
 .qp{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);display:flex;justify-content:center;align-items:center;z-index:100}
-.qp img{max-width:320px;border-radius:12px;background:#fff;padding:10px}.qp.hidden{display:none}
+.qp img{max-width:320px;border-radius:12px;background:#fff;padding:10px}.badge-off{background:#7f1d1d;color:#fca5a5;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:6px}
+.btn-topup{background:#10b981;color:#fff;padding:3px 10px;font-size:11px;margin-left:4px}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:200;justify-content:center;align-items:center}
+.modal.show{display:flex}
+.modal-box{background:#1e293b;border-radius:12px;padding:24px;width:400px;max-width:90%}
+.modal-box h3{color:#38bdf8;margin-bottom:16px}
+.modal-box input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:13px}
+.hidden{display:none}
 </style></head><body>
 <h1>\u7528\u6237\u9762\u677f</h1>
 
@@ -247,6 +254,17 @@ input{padding:7px 10px;border-radius:6px;border:1px solid #334155;background:#0f
 </div>
 </div>
 
+<div id="topup_modal" class="modal">
+  <div class="modal-box">
+   <h3>\u5b50\u8d26\u6237\u52a0\u91cf</h3>
+   <p style="color:#94a3b8;margin-bottom:8px">\u5b50\u8d26\u6237: <span id="tu_name"></span></p>
+   <p style="color:#94a3b8;margin-bottom:12px">\u5f53\u524d\u6d41\u91cf: <span id="tu_cur"></span> GB</p>
+   <input type="hidden" id="tu_uid"/>
+   <input type="number" id="tu_amt" placeholder="\u8f93\u5165 GB" step="1" min="1"/>
+   <button class="btn btn-topup" id="btn_topup_ok">确认加量</button>
+   <button class="btn btn-del" id="btn_topup_cancel">取消</button>
+  </div>
+</div>
 <div class="qp hidden" id="qp" onclick="this.classList.add('hidden')"><img id="qi"></div>
 
 <script>
@@ -280,11 +298,13 @@ async function load(){
   var tr=document.createElement("tr");
   var p2=s.limit_gb>0?Math.round(s.used_gb/s.limit_gb*100):0;
   var esc=s.link.replace(/'/g,"%27");
-  tr.innerHTML="<td>"+s.name+"</td><td>"+s.limit_gb+"GB</td><td>"+s.used_gb+"GB ("+p2+"%)</td>"+
+  var sb=s.active?"":" <span class=badge-off>已停用</span>";
+  tr.innerHTML="<td>"+s.name+sb+"</td><td>"+s.limit_gb+"GB</td><td>"+s.used_gb+"GB ("+p2+"%)</td>"+
    "<td><div class=lb>"+s.link+"</div></td>"+
-   "<td><button class='btn btn-qr' data-link='"+esc+"'>QR</button> "+
-   "<button class='btn btn-del' data-uuid='"+s.uuid+"'>\u5220\u9664</button></td>";
-  tb.appendChild(tr);
+   "<td><button class=btn-topup data-uuid="+s.uuid+" data-name="+s.name+" data-limit="+s.limit_gb+">加量</button> "+
+   "<button class=btn-qr data-link="+esc+">QR</button> "+
+   "<button class=btn-del data-uuid="+s.uuid+">删除</button></td>";
+tb.appendChild(tr);
  }
  var ls=tb.querySelectorAll(".lb");
  for(var i2=0;i2<ls.length;i2++){ls[i2].onclick=function(){navigator.clipboard.writeText(this.textContent);this.style.color="#10b981";setTimeout(function(){this.style.color="#94a3b8"}.bind(this),1000)};ls[i2].title="Click to copy"};
@@ -298,6 +318,14 @@ async function load(){
   var fd=new FormData();fd.set("token",token);fd.set("uuid",this.dataset.uuid);
   var r=await fetch("/api/user/delete_sub",{method:"POST",body:new URLSearchParams(fd)});
   var j=await r.json();if(j.ok)load();else alert(j.error);
+ }}
+ var ts=tb.querySelectorAll(".btn-topup");
+ for(var t=0;t<ts.length;t++){ts[t].onclick=function(){
+  document.getElementById("tu_uid").value=this.dataset.uuid;
+  document.getElementById("tu_name").textContent=this.dataset.name;
+  document.getElementById("tu_cur").textContent=this.dataset.limit;
+  document.getElementById("tu_amt").value="";
+  document.getElementById("topup_modal").classList.add("show");
  }}
 }
 function showQR(link){
@@ -313,6 +341,22 @@ document.getElementById("btn_asub").onclick=async function(){
  var j=await r.json();var m=document.getElementById("sm");m.style.display="block";
  if(j.ok){m.className="msg msg-ok";m.textContent="\u5df2\u521b\u5efa: "+j.name;document.getElementById("sn").value="";load()}
  else{m.className="msg msg-err";m.textContent=j.error}
+};
+
+document.getElementById("btn_topup_cancel").onclick=function(){
+  document.getElementById("topup_modal").classList.remove("show");
+};
+document.getElementById("btn_topup_ok").onclick=async function(){
+  var amt=parseInt(document.getElementById("tu_amt").value);
+  if(!amt||amt<=0){alert("\u8bf7\u8f93\u5165\u6709\u6548\u7684\u6d41\u91cf\u503c");return}
+  var fd=new FormData();
+  fd.set("token",token);
+  fd.set("uuid",document.getElementById("tu_uid").value);
+  fd.set("amount_gb",amt);
+  var r=await fetch("/api/user/sub_topup",{method:"POST",body:new URLSearchParams(fd)});
+  var j=await r.json();
+  if(j.ok){document.getElementById("topup_modal").classList.remove("show");load()}
+  else alert(j.error||"\u52a0\u91cf\u5931\u8d25");
 };
 </script></body></html>"""
 
@@ -383,10 +427,10 @@ class H(BaseHTTPRequestHandler):
             data=ld()
             main=next((u for u in data["users"] if u["uuid"]==uid),None)
             if not main: self._json({"error":"\u8d26\u6237\u4e0d\u5b58\u5728"},404);return
-            subs=[u for u in data["users"] if u.get("parent_uuid")==uid and u.get("active",True)]
-            sub_use=sum(s.get("used_bytes",0) for s in subs)
+            all_subs=[u for u in data["users"] if u.get("parent_uuid")==uid];active_subs=[s for s in all_subs if s.get("active",True)]
+            sub_use=sum(s.get("used_bytes",0) for s in all_subs)
             total=main.get("used_bytes",0)+sub_use
-            self._json({"main":{"name":main["name"],"limit_gb":main["limit_gb"],"total_used_gb":gb(total),"expiry":main.get("expiry_date","?"),"link":ml(main["uuid"],main["name"])},"subs":[{"name":s["name"],"uuid":s["uuid"],"limit_gb":s["limit_gb"],"used_gb":gb(s.get("used_bytes",0)),"link":ml(s["uuid"],s["name"])} for s in subs],"remaining":round(main["limit_gb"]-gb(total),2)})
+            self._json({"main":{"name":main["name"],"limit_gb":main["limit_gb"],"total_used_gb":gb(total),"expiry":main.get("expiry_date","?"),"link":ml(main["uuid"],main["name"])},"subs":[{"name":s["name"],"uuid":s["uuid"],"limit_gb":s["limit_gb"],"active":s.get("active",True),"used_gb":gb(s.get("used_bytes",0)),"link":ml(s["uuid"],s["name"])} for s in all_subs],"remaining":round(main["limit_gb"]-sum(s["limit_gb"] for s in active_subs),2),"remaining_total":round(main["limit_gb"]-sum(s["limit_gb"] for s in all_subs),2)})
         else: self._send("Not Found",404)
 
     def do_POST(self):
@@ -479,6 +523,25 @@ class H(BaseHTTPRequestHandler):
             if not main: self._json({"error":"\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef"},401);return
             token=str(uuid_mod.uuid4());SESS[token]=main["uuid"]
             self._json({"ok":True,"token":token,"name":main["name"]})
+        elif p.path=="/api/user/sub_topup":
+            uid=SESS.get(b.get("token",[""])[0])
+            if not uid: self._json({"error":"\u672a\u767b\u5f55"},401);return
+            suid=b.get("uuid",[""])[0]
+            try: amt=float(b.get("amount_gb",["5"])[0])
+            except: self._json({"error":"\u53c2\u6570\u9519\u8bef"},400);return
+            if amt<=0: self._json({"error":"\u52a0\u91cf\u5fc5\u987b\u5927\u4e8e0"},400);return
+            data=ld()
+            main=next((u for u in data["users"] if u["uuid"]==uid),None)
+            sub=next((u for u in data["users"] if u["uuid"]==suid and u.get("parent_uuid")==uid),None)
+            if not sub: self._json({"error":"\u53c2\u6570\u9519\u8bef"},404);return
+            act_subs=[u for u in data["users"] if u.get("parent_uuid")==uid and u.get("active",True)]
+            act_alloc=sum(s["limit_gb"] for s in act_subs)
+            rem=main["limit_gb"]-act_alloc
+            if amt>rem: self._json({"error":"\u6d41\u91cf\u4e0d\u8db3! \u5269\u4f59 "+str(rem)+"GB"},400);return
+            sub["limit_gb"]+=amt
+            sub["active"]=True
+            sd(data)
+            self._json({"ok":True,"new_limit":sub["limit_gb"]})
         elif p.path=="/api/user/add_sub":
             uid=SESS.get(b.get("token",[""])[0])
             if not uid: self._json({"error":"\u672a\u767b\u5f55"},401);return
@@ -490,9 +553,9 @@ class H(BaseHTTPRequestHandler):
             try: sl=float(b.get("limit_gb",["10"])[0])
             except: self._json({"error":"\u6570\u5b57\u683c\u5f0f\u9519\u8bef"},400);return
             if sl<=0: self._json({"error":"\u6d41\u91cf\u5fc5\u987b\u5927\u4e8e0"},400);return
-            subs=[u for u in data["users"] if u.get("parent_uuid")==uid and u.get("active",True)]
-            if len(subs) >= 20: self._json({"error":"\u5b50\u8d26\u6237\u5df2\u8fbe\u4e0a\u965020\u4e2a"},400);return
-            alloc=sum(s["limit_gb"] for s in subs)
+            all_subs=[u for u in data["users"] if u.get("parent_uuid")==uid];active_subs=[s for s in all_subs if s.get("active",True)]
+            if len(all_subs) >= 20: self._json({"error":"\u5b50\u8d26\u6237\u5df2\u8fbe\u4e0a\u965020\u4e2a"},400);return
+            alloc=sum(s["limit_gb"] for s in all_subs)
             rem=main["limit_gb"]-alloc
             if sl>rem: self._json({"error":"\u6d41\u91cf\u6c60\u4e0d\u8db3! \u5269\u4f59 "+str(rem)+"GB"});return
             suid=str(uuid_mod.uuid4())
