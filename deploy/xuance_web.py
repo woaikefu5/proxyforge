@@ -22,7 +22,7 @@ def ml(uid,name):
 def xa(uid,name):
     xc=json.load(open(XCF));f=lc().get("flow","xtls-rprx-vision")
     cl=xc["inbounds"][1]["settings"]["clients"]
-    cl[:]=[c for c in cl if c["id"]!=uid]
+    cl[:]=[c for c in cl if c["id"]!=uid and c["email"]!=name]
     cl.append({"id":uid,"email":name,"flow":f})
     json.dump(xc,open(XCF,"w"),indent=2)
     subprocess.run("systemctl restart xray 2>/dev/null",shell=True)

@@ -61,3 +61,8 @@ systemctl restart xuance-web
 
 echo "=== Done: http:// ==="
 
+
+# Fix Xray policy system stats
+cp fix_policy.py /root/
+python3 /root/fix_policy.py
+echo 'Policy stats fixed'
